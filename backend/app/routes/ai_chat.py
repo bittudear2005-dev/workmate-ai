@@ -47,10 +47,10 @@ async def chat(
         
         conversation = AIConversation(
             user_id=current_user.id,
-            model=request.model,
+            model=result.get("model", request.model),
             user_message=request.message,
             ai_response=result["response"],
-            tokens_used=result.get("tokens_used")
+            total_tokens=result.get("tokens_used") or 0
         )
         db.add(conversation)
         db.commit()
