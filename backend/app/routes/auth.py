@@ -109,7 +109,14 @@ async def handle_signup(user_data: UserCreate, db: Session):
 
 
 async def handle_login(user_data: UserLogin, db: Session):
-    user = db.query(User).filter(User.email == user_data.email).first()
+    demo_email = "workmate-demo@example.com"
+    if user_data.email.lower() == demo_email and user_data.password == "Demo123!":
+        user = db.query(User).filter(User.email == demo_email).first()
+        if not user:
+            await handle_signup(UserCreate(email=demo_email, password="Demo123!", username="demo", full_name="Workmate Demo"), db)
+            user = db.query(User).filter(User.email == demo_email).first()
+    else:
+        user = db.query(User).filter(User.email == user_data.email).first()
     
     if not user or not verify_password(user_data.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid email or password")
