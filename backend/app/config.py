@@ -5,6 +5,13 @@ import os
 import json
 
 
+def serverless_sqlite_url(async_driver: bool = False) -> str:
+    driver = "sqlite+aiosqlite" if async_driver else "sqlite"
+    if os.getenv("VERCEL"):
+        return f"{driver}:////tmp/workmate.db"
+    return f"{driver}:///./workmate.db"
+
+
 class Settings(BaseSettings):
     # App Configuration
     APP_NAME: str = Field(default="Cosmic Assistant", alias="app_name")
@@ -14,11 +21,11 @@ class Settings(BaseSettings):
     
     # PostgreSQL Database Configuration
     DATABASE_URL: str = Field(
-        default="sqlite:////tmp/workmate.db",
+        default_factory=lambda: serverless_sqlite_url(),
         alias="database_url"
     )
     ASYNC_DATABASE_URL: str = Field(
-        default="sqlite+aiosqlite:////tmp/workmate.db",
+        default_factory=lambda: serverless_sqlite_url(async_driver=True),
         alias="async_database_url"
     )
     

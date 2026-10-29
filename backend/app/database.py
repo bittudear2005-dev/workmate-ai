@@ -1,7 +1,7 @@
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
-from app.config import settings
+from app.config import serverless_sqlite_url, settings
 
 # Create base class for models
 Base = declarative_base()
@@ -36,7 +36,7 @@ def get_engine():
     except Exception as e:
         print(f"Could not connect to PostgreSQL ({db_url}): {e}")
         print("Falling back to local SQLite database: cosmic_assistant.db")
-        fallback_url = "sqlite:////tmp/workmate.db"
+        fallback_url = serverless_sqlite_url()
         return create_engine(
             fallback_url,
             connect_args={"check_same_thread": False},
