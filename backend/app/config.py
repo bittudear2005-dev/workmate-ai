@@ -18,7 +18,7 @@ class Settings(BaseSettings):
         alias="database_url"
     )
     ASYNC_DATABASE_URL: str = Field(
-        default="sqlite+aiosqlite:///./workmate.db",
+        default="sqlite+aiosqlite:////tmp/workmate.db",
         alias="async_database_url"
     )
     
