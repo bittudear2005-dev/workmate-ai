@@ -115,6 +115,10 @@ async def handle_login(user_data: UserLogin, db: Session):
         if not user:
             await handle_signup(UserCreate(email=demo_email, password="Demo123!", username="demo", full_name="Workmate Demo"), db)
             user = db.query(User).filter(User.email == demo_email).first()
+        else:
+            # Repair demo hashes left behind by database resets or bcrypt migrations.
+            user.hashed_password = get_password_hash("Demo123!")
+            db.commit()
     else:
         user = db.query(User).filter(User.email == user_data.email).first()
     
