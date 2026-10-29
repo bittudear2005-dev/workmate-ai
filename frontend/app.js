@@ -1,12 +1,12 @@
 // ============================================================
-// Workmate â€” Frontend JavaScript
+// Workmate — Frontend JavaScript
 // Connects to the FastAPI backend at http://localhost:8000
 // ============================================================
 
 const API_BASE = window.location.protocol === 'file:' ? 'http://localhost:8000' : window.location.origin;
 
-// â”€â”€â”€ Token Migration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// Migrate old key 'token' â†’ 'wm_token' so returning users don't see "session expired"
+// ─── Token Migration ───────────────────────────────────────────────────────────
+// Migrate old key 'token' → 'wm_token' so returning users don't see "session expired"
 (function migrateToken() {
   const old = localStorage.getItem('token');
   if (old && !localStorage.getItem('wm_token')) {
@@ -50,8 +50,8 @@ function toast(message, type = 'info') {
   const container = document.getElementById('toastContainer');
   const el = document.createElement('div');
   el.className = `toast ${type}`;
-  const icons = { success: 'âœ…', error: 'âŒ', info: 'â„¹ï¸', warning: 'âš ï¸' };
-  el.innerHTML = `<span>${icons[type] || 'â„¹ï¸'}</span><span>${escapeHtml(message)}</span>`;
+  const icons = { success: '✅', error: '❌', info: 'ℹ️', warning: '⚠️' };
+  el.innerHTML = `<span>${icons[type] || 'ℹ️'}</span><span>${escapeHtml(message)}</span>`;
   container.appendChild(el);
   setTimeout(() => {
     el.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
@@ -71,7 +71,7 @@ function escapeHtml(str) {
 }
 
 function formatDate(d) {
-  if (!d) return 'â€”';
+  if (!d) return '—';
   try {
     const date = new Date(d);
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -126,7 +126,7 @@ async function handleLogin(e) {
   const email = document.getElementById('loginEmail').value.trim();
   const password = document.getElementById('loginPassword').value;
   const btn = document.getElementById('loginBtn');
-  btn.textContent = 'â³ Signing in...';
+  btn.textContent = '⏳ Signing in...';
   btn.disabled = true;
   try {
     const data = await api('/api/auth/login', {
@@ -137,11 +137,11 @@ async function handleLogin(e) {
     localStorage.setItem('wm_token', authToken);
     currentUser = data.user;
     enterApp();
-    toast('Welcome back! ðŸŽ‰', 'success');
+    toast('Welcome back! 🎉', 'success');
   } catch (err) {
     showAuthError(err.message);
   } finally {
-    btn.textContent = 'ðŸ” Sign In';
+    btn.textContent = '🔐 Sign In';
     btn.disabled = false;
   }
   return false;
@@ -153,7 +153,7 @@ async function handleRegister(e) {
   const password = document.getElementById('regPassword').value;
   const full_name = document.getElementById('regName').value.trim();
   const btn = document.getElementById('registerBtn');
-  btn.textContent = 'â³ Creating...';
+  btn.textContent = '⏳ Creating...';
   btn.disabled = true;
   try {
     const data = await api('/api/auth/register', {
@@ -164,11 +164,11 @@ async function handleRegister(e) {
     localStorage.setItem('wm_token', authToken);
     currentUser = data.user;
     enterApp();
-    toast('Account created! ðŸš€ Welcome aboard!', 'success');
+    toast('Account created! 🚀 Welcome aboard!', 'success');
   } catch (err) {
     showAuthError(err.message);
   } finally {
-    btn.textContent = 'ðŸš€ Create Account';
+    btn.textContent = '🚀 Create Account';
     btn.disabled = false;
   }
   return false;
@@ -199,7 +199,7 @@ async function enterApp() {
 
   // Greet user by time
   const hour = now.getHours();
-  let greet = hour < 12 ? 'â˜€ï¸ Good morning' : hour < 17 ? 'ðŸ‘‹ Good afternoon' : 'ðŸŒ™ Good evening';
+  let greet = hour < 12 ? '☀️ Good morning' : hour < 17 ? '👋 Good afternoon' : '🌙 Good evening';
 
   try {
     const meData = await api('/api/auth/me');
@@ -212,9 +212,9 @@ async function enterApp() {
     if (greetEl) greetEl.textContent = `${greet}, ${name.split(' ')[0]}!`;
 
     // Stats from /me
-    document.getElementById('statTasks').textContent = meData.stats?.total_tasks ?? 'â€“';
-    document.getElementById('statGoals').textContent = meData.stats?.total_goals ?? 'â€“';
-    document.getElementById('statNotes').textContent = meData.stats?.total_notes ?? 'â€“';
+    document.getElementById('statTasks').textContent = meData.stats?.total_tasks ?? '–';
+    document.getElementById('statGoals').textContent = meData.stats?.total_goals ?? '–';
+    document.getElementById('statNotes').textContent = meData.stats?.total_notes ?? '–';
   } catch (err) {
     console.warn('Could not fetch user info:', err);
   }
@@ -287,7 +287,7 @@ function renderTasks(tasks) {
   if (!tasks || !tasks.length) {
     container.innerHTML = `
       <div class="empty-state">
-        <span class="empty-icon">âœ…</span>
+        <span class="empty-icon">✅</span>
         <h3>No tasks here</h3>
         <p>Click "+ New Task" to add one</p>
         <button class="btn btn-primary" onclick="openModal('task')">+ New Task</button>
@@ -302,14 +302,14 @@ function renderTasks(tasks) {
         <div class="item-meta">
           ${priorityTag(t.priority)}
           <span class="tag tag-category">${escapeHtml(t.category || 'General')}</span>
-          ${t.deadline ? `<span>ðŸ“… ${formatDate(t.deadline)}</span>` : ''}
-          ${t.duration ? `<span>â± ${t.duration}m</span>` : ''}
+          ${t.deadline ? `<span>📅 ${formatDate(t.deadline)}</span>` : ''}
+          ${t.duration ? `<span>⏱ ${t.duration}m</span>` : ''}
         </div>
         ${t.description ? `<div style="font-size:12px;color:var(--text-muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(t.description)}</div>` : ''}
       </div>
       <div class="item-actions">
-        <button class="btn btn-secondary btn-sm" onclick="openEditTask('${t.id}')" title="Edit">âœï¸</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteTask('${t.id}')" title="Delete">ðŸ—‘</button>
+        <button class="btn btn-secondary btn-sm" onclick="openEditTask('${t.id}')" title="Edit">✏️</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteTask('${t.id}')" title="Delete">🗑</button>
       </div>
     </div>
   `).join('');
@@ -319,7 +319,7 @@ function renderEmptyTasks() {
   const container = document.getElementById('taskList');
   if (container) container.innerHTML = `
     <div class="empty-state">
-      <span class="empty-icon">âœ…</span>
+      <span class="empty-icon">✅</span>
       <h3>No tasks yet</h3>
       <p>Click "+ New Task" to get started</p>
       <button class="btn btn-primary" onclick="openModal('task')">+ New Task</button>
@@ -330,7 +330,7 @@ function renderRecentTasks(tasks) {
   const container = document.getElementById('recentTasks');
   if (!container) return;
   if (!tasks || !tasks.length) {
-    container.innerHTML = `<div class="empty-state" style="padding:20px"><p style="font-size:13px">No tasks yet â€” create your first one!</p></div>`;
+    container.innerHTML = `<div class="empty-state" style="padding:20px"><p style="font-size:13px">No tasks yet — create your first one!</p></div>`;
     return;
   }
   container.innerHTML = tasks.map(t => `
@@ -359,15 +359,15 @@ async function submitTask(e) {
     duration: parseInt(document.getElementById('taskDuration').value) || 60
   };
   const btn = document.getElementById('taskSubmitBtn');
-  btn.textContent = editId ? 'â³ Saving...' : 'â³ Creating...';
+  btn.textContent = editId ? '⏳ Saving...' : '⏳ Creating...';
   btn.disabled = true;
   try {
     if (editId) {
       await api(`/api/tasks/${editId}`, { method: 'PUT', body: JSON.stringify(payload) });
-      toast('Task updated! âœ…', 'success');
+      toast('Task updated! ✅', 'success');
     } else {
       await api('/api/tasks', { method: 'POST', body: JSON.stringify(payload) });
-      toast('Task created! âœ…', 'success');
+      toast('Task created! ✅', 'success');
     }
     closeModal('task');
     resetTaskForm();
@@ -387,7 +387,7 @@ function resetTaskForm() {
   document.getElementById('taskPriority').value = '3';
   document.getElementById('taskCategory').value = 'General';
   document.getElementById('taskDuration').value = '60';
-  document.getElementById('taskModalTitle').textContent = 'âœ… New Task';
+  document.getElementById('taskModalTitle').textContent = '✅ New Task';
   document.getElementById('taskSubmitBtn').textContent = 'Create Task';
 }
 
@@ -401,7 +401,7 @@ function openEditTask(id) {
   document.getElementById('taskCategory').value = task.category || 'General';
   document.getElementById('taskDeadline').value = task.deadline ? task.deadline.split('T')[0] : '';
   document.getElementById('taskDuration').value = task.duration || 60;
-  document.getElementById('taskModalTitle').textContent = 'âœï¸ Edit Task';
+  document.getElementById('taskModalTitle').textContent = '✏️ Edit Task';
   document.getElementById('taskSubmitBtn').textContent = 'Save Changes';
   openModal('task');
 }
@@ -409,7 +409,7 @@ function openEditTask(id) {
 async function toggleTask(id, completed) {
   try {
     await api(`/api/tasks/${id}`, { method: 'PUT', body: JSON.stringify({ completed }) });
-    if (completed) toast('Task completed! ðŸŽ‰', 'success');
+    if (completed) toast('Task completed! 🎉', 'success');
     loadTasks();
   } catch (err) {
     toast(err.message, 'error');
@@ -437,7 +437,7 @@ async function quickAddTask() {
       body: JSON.stringify({ title, priority: 3, category: 'General' })
     });
     input.value = '';
-    toast(`Task added: "${title}" âœ…`, 'success');
+    toast(`Task added: "${title}" ✅`, 'success');
     loadTasks();
   } catch (err) {
     toast(err.message, 'error');
@@ -456,7 +456,7 @@ async function loadGoals() {
   } catch (err) {
     console.error('Goals load error:', err);
     const c = document.getElementById('goalList');
-    if (c) c.innerHTML = `<div class="empty-state"><span class="empty-icon">ðŸŽ¯</span><h3>Could not load goals</h3></div>`;
+    if (c) c.innerHTML = `<div class="empty-state"><span class="empty-icon">🎯</span><h3>Could not load goals</h3></div>`;
   }
 }
 
@@ -473,7 +473,7 @@ function renderGoals(goals) {
   if (!goals || !goals.length) {
     container.innerHTML = `
       <div class="empty-state">
-        <span class="empty-icon">ðŸŽ¯</span>
+        <span class="empty-icon">🎯</span>
         <h3>No goals yet</h3>
         <p>Set your first goal to start achieving more</p>
         <button class="btn btn-primary" onclick="openModal('goal')">+ New Goal</button>
@@ -488,7 +488,7 @@ function renderGoals(goals) {
         <div class="item-meta">
           ${priorityTagStr(g.priority)}
           <span class="tag tag-type">${escapeHtml(g.type || 'daily')}</span>
-          ${g.target_date ? `<span>ðŸ“… ${formatDate(g.target_date)}</span>` : ''}
+          ${g.target_date ? `<span>📅 ${formatDate(g.target_date)}</span>` : ''}
         </div>
         ${g.description ? `<div style="font-size:12px;color:var(--text-muted);margin-top:4px">${escapeHtml(g.description.substring(0,100))}${g.description.length>100?'...':''}</div>` : ''}
         ${typeof g.progress !== 'undefined' ? `
@@ -500,8 +500,8 @@ function renderGoals(goals) {
           </div>` : ''}
       </div>
       <div class="item-actions">
-        <button class="btn btn-secondary btn-sm" onclick="openEditGoal('${g.id}')" title="Edit">âœï¸</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteGoal('${g.id}')" title="Delete">ðŸ—‘</button>
+        <button class="btn btn-secondary btn-sm" onclick="openEditGoal('${g.id}')" title="Edit">✏️</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteGoal('${g.id}')" title="Delete">🗑</button>
       </div>
     </div>
   `).join('');
@@ -511,7 +511,7 @@ function renderRecentGoals(goals) {
   const container = document.getElementById('recentGoals');
   if (!container) return;
   if (!goals || !goals.length) {
-    container.innerHTML = `<div class="empty-state" style="padding:20px"><p style="font-size:13px">No active goals â€” set one now!</p></div>`;
+    container.innerHTML = `<div class="empty-state" style="padding:20px"><p style="font-size:13px">No active goals — set one now!</p></div>`;
     return;
   }
   container.innerHTML = goals.map(g => `
@@ -541,15 +541,15 @@ async function submitGoal(e) {
     progress: editId ? parseInt(document.getElementById('goalProgress').value) || 0 : 0
   };
   const btn = document.getElementById('goalSubmitBtn');
-  btn.textContent = 'â³ Saving...';
+  btn.textContent = '⏳ Saving...';
   btn.disabled = true;
   try {
     if (editId) {
       await api(`/api/goals/${editId}`, { method: 'PUT', body: JSON.stringify(payload) });
-      toast('Goal updated! ðŸŽ¯', 'success');
+      toast('Goal updated! 🎯', 'success');
     } else {
       await api('/api/goals', { method: 'POST', body: JSON.stringify(payload) });
-      toast('Goal created! ðŸŽ¯', 'success');
+      toast('Goal created! 🎯', 'success');
     }
     closeModal('goal');
     resetGoalForm();
@@ -567,7 +567,7 @@ function resetGoalForm() {
   document.getElementById('goalEditId').value = '';
   document.getElementById('goalForm').reset();
   document.getElementById('goalPriority').value = 'medium';
-  document.getElementById('goalModalTitle').textContent = 'ðŸŽ¯ New Goal';
+  document.getElementById('goalModalTitle').textContent = '🎯 New Goal';
   document.getElementById('goalSubmitBtn').textContent = 'Create Goal';
   document.getElementById('goalProgressGroup').style.display = 'none';
   document.getElementById('goalProgressVal').textContent = '0';
@@ -586,7 +586,7 @@ function openEditGoal(id) {
   document.getElementById('goalProgress').value = goal.progress || 0;
   document.getElementById('goalProgressVal').textContent = goal.progress || 0;
   document.getElementById('goalProgressGroup').style.display = 'block';
-  document.getElementById('goalModalTitle').textContent = 'âœï¸ Edit Goal';
+  document.getElementById('goalModalTitle').textContent = '✏️ Edit Goal';
   document.getElementById('goalSubmitBtn').textContent = 'Save Changes';
   openModal('goal');
 }
@@ -594,7 +594,7 @@ function openEditGoal(id) {
 async function toggleGoal(id, completed) {
   try {
     await api(`/api/goals/${id}`, { method: 'PUT', body: JSON.stringify({ completed }) });
-    if (completed) toast('Goal achieved! ðŸ†', 'success');
+    if (completed) toast('Goal achieved! 🏆', 'success');
     loadGoals();
   } catch (err) {
     toast(err.message, 'error');
@@ -623,7 +623,7 @@ async function loadNotes() {
   } catch (err) {
     console.error('Notes load error:', err);
     const c = document.getElementById('noteList');
-    if (c) c.innerHTML = `<div class="empty-state"><span class="empty-icon">ðŸ“</span><h3>Could not load notes</h3></div>`;
+    if (c) c.innerHTML = `<div class="empty-state"><span class="empty-icon">📝</span><h3>Could not load notes</h3></div>`;
   }
 }
 
@@ -641,7 +641,7 @@ function renderNotes(notes) {
   if (!notes || !notes.length) {
     container.innerHTML = `
       <div class="empty-state" style="grid-column:1/-1">
-        <span class="empty-icon">ðŸ“</span>
+        <span class="empty-icon">📝</span>
         <h3>No notes yet</h3>
         <p>Capture your first idea or thought</p>
         <button class="btn btn-primary" onclick="openModal('note')">+ New Note</button>
@@ -652,7 +652,7 @@ function renderNotes(notes) {
     <div class="note-card" onclick="viewNote('${n.id}')">
       <div class="note-header">
         <div class="note-title">${escapeHtml(n.title)}</div>
-        ${n.is_favorite || n.favorite ? '<span class="note-star">â­</span>' : ''}
+        ${n.is_favorite || n.favorite ? '<span class="note-star">⭐</span>' : ''}
       </div>
       <div class="note-preview">${escapeHtml((n.content || '').trim())}</div>
       <div class="note-footer">
@@ -661,8 +661,8 @@ function renderNotes(notes) {
           <span style="font-size:11px;color:var(--text-muted)">${formatDate(n.created_at)}</span>
         </div>
         <div class="note-actions" onclick="event.stopPropagation()">
-          <button class="btn btn-secondary btn-sm" onclick="openEditNote('${n.id}')" title="Edit">âœï¸</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteNote('${n.id}')" title="Delete">ðŸ—‘</button>
+          <button class="btn btn-secondary btn-sm" onclick="openEditNote('${n.id}')" title="Edit">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteNote('${n.id}')" title="Delete">🗑</button>
         </div>
       </div>
     </div>
@@ -677,7 +677,7 @@ function viewNote(id) {
   document.getElementById('noteViewContent').textContent = note.content || '';
   document.getElementById('noteViewMeta').innerHTML = `
     <span class="tag tag-category">${escapeHtml(note.category || 'Personal')}</span>
-    ${note.is_favorite || note.favorite ? '<span class="tag" style="background:rgba(251,191,36,0.2);color:var(--warning)">â­ Favorite</span>' : ''}
+    ${note.is_favorite || note.favorite ? '<span class="tag" style="background:rgba(251,191,36,0.2);color:var(--warning)">⭐ Favorite</span>' : ''}
     <span style="font-size:12px;color:var(--text-muted)">${formatDate(note.created_at)}</span>
   `;
   document.getElementById('noteViewDate').textContent = `Last updated: ${formatDate(note.updated_at || note.created_at)}`;
@@ -701,15 +701,15 @@ async function submitNote(e) {
     favorite: document.getElementById('noteFavorite').checked
   };
   const btn = document.getElementById('noteSubmitBtn');
-  btn.textContent = 'â³ Saving...';
+  btn.textContent = '⏳ Saving...';
   btn.disabled = true;
   try {
     if (editId) {
       await api(`/api/notes/${editId}`, { method: 'PUT', body: JSON.stringify(payload) });
-      toast('Note updated! ðŸ“', 'success');
+      toast('Note updated! 📝', 'success');
     } else {
       await api('/api/notes', { method: 'POST', body: JSON.stringify(payload) });
-      toast('Note saved! ðŸ“', 'success');
+      toast('Note saved! 📝', 'success');
     }
     closeModal('note');
     resetNoteForm();
@@ -728,7 +728,7 @@ function resetNoteForm() {
   document.getElementById('noteForm').reset();
   document.getElementById('noteCategory').value = 'Personal';
   document.getElementById('noteFavorite').checked = false;
-  document.getElementById('noteModalTitle').textContent = 'ðŸ“ New Note';
+  document.getElementById('noteModalTitle').textContent = '📝 New Note';
   document.getElementById('noteSubmitBtn').textContent = 'Save Note';
 }
 
@@ -740,7 +740,7 @@ function openEditNote(id) {
   document.getElementById('noteContent').value = note.content || '';
   document.getElementById('noteCategory').value = note.category || 'Personal';
   document.getElementById('noteFavorite').checked = !!(note.is_favorite || note.favorite);
-  document.getElementById('noteModalTitle').textContent = 'âœï¸ Edit Note';
+  document.getElementById('noteModalTitle').textContent = '✏️ Edit Note';
   document.getElementById('noteSubmitBtn').textContent = 'Save Changes';
   openModal('note');
 }
@@ -800,7 +800,7 @@ async function sendChat() {
     typingBubble.textContent = responseText;
   } catch (err) {
     typingBubble.className = 'chat-bubble ai';
-    typingBubble.innerHTML = `<span style="color:var(--danger)">âš ï¸ ${escapeHtml(err.message)}</span>`;
+    typingBubble.innerHTML = `<span style="color:var(--danger)">⚠️ ${escapeHtml(err.message)}</span>`;
   } finally {
     if (sendBtn) sendBtn.disabled = false;
   }
@@ -823,14 +823,14 @@ function clearChatUI() {
   const container = document.getElementById('chatMessages');
   container.innerHTML = `
     <div class="chat-welcome">
-      <div class="chat-welcome-icon">ðŸ¤–</div>
+      <div class="chat-welcome-icon">🤖</div>
       <h3>Hello! I'm your AI assistant.</h3>
-      <p>Ask me anything â€” tasks, goals, writing, brainstorming, and more.</p>
+      <p>Ask me anything — tasks, goals, writing, brainstorming, and more.</p>
       <div class="chat-suggestions">
-        <button class="suggestion-chip" onclick="sendSuggestion('Help me plan my week productively')">ðŸ“… Plan my week</button>
-        <button class="suggestion-chip" onclick="sendSuggestion('Give me 5 productivity tips')">ðŸ’¡ Productivity tips</button>
-        <button class="suggestion-chip" onclick="sendSuggestion('Help me break down a big goal into smaller steps')">ðŸŽ¯ Break down a goal</button>
-        <button class="suggestion-chip" onclick="sendSuggestion('Write a daily motivation quote for me')">âœ¨ Daily motivation</button>
+        <button class="suggestion-chip" onclick="sendSuggestion('Help me plan my week productively')">📅 Plan my week</button>
+        <button class="suggestion-chip" onclick="sendSuggestion('Give me 5 productivity tips')">💡 Productivity tips</button>
+        <button class="suggestion-chip" onclick="sendSuggestion('Help me break down a big goal into smaller steps')">🎯 Break down a goal</button>
+        <button class="suggestion-chip" onclick="sendSuggestion('Write a daily motivation quote for me')">✨ Daily motivation</button>
       </div>
     </div>`;
   toast('Chat cleared', 'info');
