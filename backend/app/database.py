@@ -36,7 +36,7 @@ def get_engine():
     except Exception as e:
         print(f"Could not connect to PostgreSQL ({db_url}): {e}")
         print("Falling back to local SQLite database: cosmic_assistant.db")
-        fallback_url = "sqlite:///./cosmic_assistant.db"
+        fallback_url = "sqlite:////tmp/workmate.db"
         return create_engine(
             fallback_url,
             connect_args={"check_same_thread": False},

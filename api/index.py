@@ -7,5 +7,7 @@ sys.path.insert(0, str(BACKEND_DIR))
 os.chdir(BACKEND_DIR)
 
 from main import app
+from mangum import Mangum
 
-handler = app
+# Vercel's Python runtime can invoke this ASGI adapter reliably.
+handler = Mangum(app, lifespan="off")

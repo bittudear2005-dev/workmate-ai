@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     
     # PostgreSQL Database Configuration
     DATABASE_URL: str = Field(
-        default="sqlite:///./workmate.db",
+        default="sqlite:////tmp/workmate.db",
         alias="database_url"
     )
     ASYNC_DATABASE_URL: str = Field(
