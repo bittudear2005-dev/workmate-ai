@@ -14,7 +14,11 @@ from app.config import settings
 
 router = APIRouter()
 
-UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "uploads")
+UPLOAD_DIR = (
+    os.path.join("/tmp", "workmate", "uploads")
+    if os.environ.get("VERCEL")
+    else os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "uploads")
+)
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 

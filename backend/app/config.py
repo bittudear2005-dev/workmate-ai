@@ -63,7 +63,7 @@ class Settings(BaseSettings):
         default="pdf,png,jpg,jpeg,txt,doc,docx,xls,xlsx,csv,md",
         alias="allowed_file_types"
     )
-    UPLOAD_DIR: str = Field(default="uploads")
+    UPLOAD_DIR: str = Field(default="/tmp/workmate/uploads" if os.environ.get("VERCEL") else "uploads")
     
     # Redis Configuration
     REDIS_URL: str = Field(default="redis://localhost:6379", alias="redis_url")
