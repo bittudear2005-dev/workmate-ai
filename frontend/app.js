@@ -28,8 +28,7 @@ let currentTaskFilter = 'all';
 
 function api(endpoint, options = {}) {
   const headers = { 'Content-Type': 'application/json', ...options.headers };
-  if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
-  return fetch(`${API_BASE}${endpoint}`, { ...options, headers })
+  if (authToken) headers['Authorization'] = `Bearer ${authToken}`;  return fetch(`${API_BASE}${endpoint}`, { ...options, headers })
     .then(async res => {
       const data = await res.json().catch(() => ({}));
       if (res.status === 401) {
