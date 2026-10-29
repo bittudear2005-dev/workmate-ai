@@ -1,14 +1,9 @@
 {
-  "buildCommand": "pip install -r requirements.txt",
-  "framework": null,
+  "version": 2,
   "builds": [
     { "src": "api/index.py", "use": "@vercel/python" }
   ],
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index.py" },
-    { "source": "/health", "destination": "/api/index.py" },
-    { "source": "/docs", "destination": "/api/index.py" },
-    { "source": "/openapi.json", "destination": "/api/index.py" },
-    { "source": "/(.*)", "destination": "/frontend/$1" }
+  "routes": [
+    { "src": "/(.*)", "dest": "/api/index.py" }
   ]
 }
