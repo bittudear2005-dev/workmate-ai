@@ -1,5 +1,4 @@
 import httpx
-import google.generativeai as genai
 from typing import Optional, Dict
 from app.config import settings
 import json
@@ -8,9 +7,12 @@ import re
 
 class AIService:
     def __init__(self):
+        self._genai = None
         if settings.ENABLE_GEMINI and settings.GEMINI_API_KEY:
             try:
+                import google.generativeai as genai
                 genai.configure(api_key=settings.GEMINI_API_KEY)
+                self._genai = genai
             except Exception as e:
                 print(f"⚠️ Failed to configure Gemini AI: {e}")
     
@@ -54,7 +56,9 @@ class AIService:
         if not settings.ENABLE_GEMINI:
             raise Exception("Gemini AI is not enabled")
         
-        model = genai.GenerativeModel(
+        if not self._genai:
+            raise Exception("Gemini AI is unavailable or not configured")
+        model = self._genai.GenerativeModel(
             settings.GEMINI_MODEL,
             generation_config={
                 "temperature": settings.AI_TEMPERATURE,
