@@ -765,7 +765,7 @@ async function sendChat() {
   input.value = '';
   input.style.height = 'auto';
 
-  const model = document.getElementById('aiModelSelect').value || 'gemini';
+  const model = document.getElementById('aiModelSelect').value || 'nebius';
   const container = document.getElementById('chatMessages');
 
   // Remove welcome screen if present

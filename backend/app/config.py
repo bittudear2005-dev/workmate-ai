@@ -46,8 +46,11 @@ class Settings(BaseSettings):
     GROQ_API_KEY: str = Field(default="", alias="groq_api_key")
     GEMINI_API_KEY: str = Field(default="", alias="gemini_api_key")
     OPENAI_API_KEY: str = Field(default="", alias="openai_api_key")
+    NEBIUS_API_KEY: str = Field(default="", alias="nebius_api_key")
     
     # AI Models Configuration
+    NEBIUS_BASE_URL: str = Field(default="https://api.tokenfactory.nebius.com/v1/", alias="nebius_base_url")
+    NEBIUS_MODEL: str = Field(default="nvidia/NVIDIA-Nemotron-Nano-9B-v2", alias="nebius_model")
     GROQ_MODEL: str = Field(default="llama-3.3-70b-versatile", alias="groq_model")
     GEMINI_MODEL: str = Field(default="gemini-2.0-flash-exp", alias="gemini_model")
     OPENAI_MODEL: str = Field(default="gpt-4o-mini", alias="openai_model")

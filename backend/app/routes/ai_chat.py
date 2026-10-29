@@ -14,7 +14,7 @@ router = APIRouter()
 
 class ChatRequest(BaseModel):
     message: str
-    model: str = "gemini"
+    model: str = "nebius"
 
 
 class TaskAnalysisRequest(BaseModel):

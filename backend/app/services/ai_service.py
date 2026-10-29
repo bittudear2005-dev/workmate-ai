@@ -21,7 +21,7 @@ class AIService:
             raise Exception("Groq AI is not enabled")
         
         headers = {
-            "Authorization": f"Bearer {settings.GROQ_API_KEY}",
+            "Authorization": "Bearer " + settings.GROQ_API_KEY,
             "Content-Type": "application/json"
         }
         
@@ -52,6 +52,38 @@ class AIService:
                 "tokens_used": result.get("usage", {}).get("total_tokens", 0)
             }
     
+    async def chat_with_nebius(self, message: str, system_prompt: Optional[str] = None):
+        if not settings.NEBIUS_API_KEY:
+            raise Exception("NEBIUS_API_KEY is not configured")
+
+        messages = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": message})
+
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            response = await client.post(
+                f"{settings.NEBIUS_BASE_URL.rstrip('/')}/chat/completions",
+                headers={
+                    "Authorization": "Bearer " + settings.NEBIUS_API_KEY,
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "model": settings.NEBIUS_MODEL,
+                    "messages": messages,
+                    "temperature": settings.AI_TEMPERATURE,
+                    "max_tokens": settings.AI_MAX_TOKENS,
+                    "top_p": settings.AI_TOP_P,
+                },
+            )
+            response.raise_for_status()
+            result = response.json()
+            return {
+                "response": result["choices"][0]["message"]["content"],
+                "model": settings.NEBIUS_MODEL,
+                "tokens_used": result.get("usage", {}).get("total_tokens", 0),
+            }
+
     async def chat_with_gemini(self, message: str, system_prompt: Optional[str] = None):
         if not settings.ENABLE_GEMINI:
             raise Exception("Gemini AI is not enabled")
@@ -93,10 +125,7 @@ Respond with JSON:
     "challenges": ["challenge1", "challenge2"]
 }}"""
 
-        result = await self.chat_with_gemini(
-            message=prompt,
-            system_prompt="You are a productivity expert. Respond with JSON only."
-        )
+        result = await self.chat(message=prompt, model="nebius", system_prompt="You are a productivity expert. Respond with JSON only.")
         
         json_match = re.search(r'\{.*\}', result["response"], re.DOTALL)
         if json_match:
@@ -131,7 +160,7 @@ Provide JSON:
     "tags": ["tag1", "tag2"]
 }}"""
 
-        result = await self.chat_with_gemini(prompt, "You are an expert summarizer. JSON only.")
+        result = await self.chat(prompt, "nebius", "You are an expert summarizer. JSON only.")
         
         json_match = re.search(r'\{.*\}', result["response"], re.DOTALL)
         if json_match:
@@ -164,7 +193,7 @@ JSON format:
     "success_metrics": ["metric1"]
 }}"""
 
-        result = await self.chat_with_gemini(prompt, "You are a goal planning expert. JSON only.")
+        result = await self.chat(prompt, "nebius", "You are a goal planning expert. JSON only.")
         
         json_match = re.search(r'\{.*\}', result["response"], re.DOTALL)
         if json_match:
@@ -183,15 +212,19 @@ JSON format:
     
     async def chat(self, message: str, model: str = "gemini", system_prompt: Optional[str] = None):
         try:
+            if model == "nebius" and settings.NEBIUS_API_KEY:
+                return await self.chat_with_nebius(message, system_prompt)
             if model == "groq" and settings.ENABLE_GROQ and settings.GROQ_API_KEY:
                 return await self.chat_with_groq(message, system_prompt)
+            if settings.NEBIUS_API_KEY:
+                return await self.chat_with_nebius(message, system_prompt)
             elif settings.ENABLE_GEMINI and settings.GEMINI_API_KEY:
                 return await self.chat_with_gemini(message, system_prompt)
             elif settings.ENABLE_GROQ and settings.GROQ_API_KEY:
                 return await self.chat_with_groq(message, system_prompt)
             else:
                 return {
-                    "response": f"👋 Cosmic Assistant received your message: \"{message}\". To enable live AI intelligence, please set your GEMINI_API_KEY or GROQ_API_KEY in the backend .env configuration.",
+                    "response": f"👋 Workmate received your message: \"{message}\". To enable NVIDIA Nemotron intelligence, configure NEBIUS_API_KEY and NEBIUS_MODEL for Nebius Token Factory. You can also configure Gemini or Groq as fallbacks.",
                     "model": "offline-fallback",
                     "tokens_used": 0
                 }

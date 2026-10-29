@@ -248,12 +248,13 @@
         <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
           <div>
             <h2>🤖 AI Assistant</h2>
-            <p>Powered by Gemini &amp; Groq</p>
+            <p>Powered by NVIDIA Nemotron on Nebius Token Factory</p>
           </div>
           <div style="display:flex;align-items:center;gap:10px">
-            <select id="aiModelSelect" class="form-select" style="width:130px">
-              <option value="gemini">✨ Gemini</option>
-              <option value="groq">⚡ Groq</option>
+            <select id="aiModelSelect" class="form-select" style="width:170px">
+              <option value="nebius">⚡ Nemotron on Nebius</option>
+              <option value="gemini">✨ Gemini fallback</option>
+              <option value="groq">⚡ Groq fallback</option>
             </select>
             <button class="btn btn-secondary btn-sm" onclick="clearChatUI()">Clear Chat</button>
           </div>
